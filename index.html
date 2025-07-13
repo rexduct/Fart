@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Void Falls</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+body {
+  background-color: #000000;
+  color: #d7c0c0;
+  font-family: 'Roboto Mono', monospace;
+  min-height: 100vh;
+  background-image: url('https://cdn.discordapp.com/banners/543220221318660104/c27a92c0762e2310d0dfc4b5c3249844.webp?size=1024');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow scrolling */
+  scroll-behavior: smooth;
+
+  /* Hide scrollbar styles */
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+    /* Overlay for subtle dark tint */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: -1;
+    }
+
+    /* Custom scrollbar */
+    /* Works on WebKit browsers (Chrome, Edge, Safari) */
+    body::-webkit-scrollbar {
+      width: 12px;
+    }
+    body::-webkit-scrollbar-track {
+      background: #1a0000; /* very dark maroon */
+      border-radius: 20px;
+      margin: 60px 0 60px 0;
+    }
+    body::-webkit-scrollbar-thumb {
+      background-color: #800000; /* maroon */
+      border-radius: 20px;
+      border: 3px solid #1a0000;
+      min-height: 50px;
+    }
+
+    /* Firefox scrollbar */
+    /* Firefox requires scrollbar-width and scrollbar-color */
+    body {
+      scrollbar-width: thin;
+      scrollbar-color: #800000 #1a0000;
+    }
+
+    header {
+      background-color: rgba(51, 0, 0, 0.85);
+      padding: 1.2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid #800000;
+      box-shadow: 0 4px 10px rgba(128, 0, 0, 0.9);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      user-select: none;
+    }
+
+    header img.logo {
+      height: 48px;
+      width: 48px;
+      object-fit: contain;
+      border-radius: 6px;
+      filter: drop-shadow(0 0 2px #800000);
+    }
+
+    header h1 {
+      color: #ff4d4d;
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: 0.15em;
+      text-shadow: 0 0 8px #800000;
+      user-select: none;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #b36666;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      transition: color 0.25s ease, background-color 0.25s ease;
+      user-select: none;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    nav button:hover,
+    nav button:focus {
+      color: #ff4d4d;
+      background-color: rgba(128, 0, 0, 0.4);
+      outline: none;
+    }
+
+    nav button[aria-selected="true"] {
+      color: #ff4d4d;
+      background-color: rgba(128, 0, 0, 0.8);
+      box-shadow: 0 0 12px #ff4d4d;
+      cursor: default;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1000px;
+      margin: 3rem auto 4rem auto;
+      padding: 0 1.5rem;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Hide all tab panels by default */
+    .tab-panel {
+      display: none;
+      color: #d7c0c0;
+    }
+
+    /* Show active tab panel */
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Hero Section with Banner BG */
+    .hero {
+      background: linear-gradient(rgba(51,0,0,0.85), rgba(128,0,0,0.85)), url('https://cdn.discordapp.com/banners/543220221318660104/c27a92c0762e2310d0dfc4b5c3249844.webp?size=1024') no-repeat center/cover;
+      border-radius: 15px;
+      padding: 4rem 2rem;
+      text-align: center;
+      color: #ffcfcf;
+      box-shadow: 0 0 35px #800000cc;
+      user-select: none;
+      backdrop-filter: brightness(0.7);
+      margin-bottom: 3rem;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px #ff4d4d;
+      letter-spacing: 0.15em;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      max-width: 700px;
+      margin: 0 auto;
+      font-weight: 400;
+      line-height: 1.5;
+      text-shadow: 0 0 8px #800000cc;
+    }
+
+    /* Games Grid */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .game-card {
+      background: rgba(34, 0, 0, 0.85);
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(128, 0, 0, 0.7);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      color: #ffdede;
+      user-select: none;
+    }
+
+    .game-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px #ff4d4dcc;
+    }
+
+    .game-card img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-bottom: 3px solid #800000;
+      filter: drop-shadow(0 0 3px #800000bb);
+    }
+
+    .game-card-content {
+      padding: 1rem 1.5rem 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .game-card-content h3 {
+      margin-bottom: 0.6rem;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #ff4d4d;
+      letter-spacing: 0.04em;
+      user-select: text;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .game-card-content a.play-btn {
+      align-self: flex-start;
+      background-color: #800000;
+      color: #ffe5e5;
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      box-shadow: 0 0 15px #800000cc;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+
+    .game-card-content a.play-btn:hover,
+    .game-card-content a.play-btn:focus {
+      background-color: #ff4d4d;
+      box-shadow: 0 0 25px #ff4d4dcc;
+      color: #330000;
+      outline: none;
+    }
+
+    /* Section Titles */
+    section h3, .tab-panel h3 {
+      font-weight: 700;
+      font-size: 2rem;
+      color: #ff4d4d;
+      border-left: 6px solid #ff4d4d;
+      padding-left: 1rem;
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+      user-select: text;
+    }
+
+    /* Links and paragraphs */
+    section p, section a, .tab-panel p, .tab-panel a {
+      font-size: 1.1rem;
+      font-weight: 400;
+      line-height: 1.6;
+      color: #d7c0c0;
+      user-select: text;
+    }
+
+    section a, .tab-panel a {
+      color: #ff4d4d;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.3s ease;
+    }
+
+    section a:hover,
+    section a:focus,
+    .tab-panel a:hover,
+    .tab-panel a:focus {
+      color: #ffcfcf;
+    }
+
+    /* Staff List */
+    .staff-section {
+      background-color: rgba(34, 0, 0, 0.85);
+      border-radius: 12px;
+      padding: 2rem 2.5rem;
+      box-shadow: 0 6px 20px rgba(128, 0, 0, 0.7);
+      color: #ffdede;
+      user-select: text;
+    }
+
+    .staff-section h3 {
+      margin-bottom: 1rem;
+    }
+
+    .staff-group {
+      margin-bottom: 2rem;
+    }
+
+    .staff-group h4 {
+      font-size: 1.5rem;
+      margin-bottom: 0.8rem;
+      color: #ff7f7f;
+      border-bottom: 2px solid #ff4d4d;
+      padding-bottom: 0.25rem;
+      user-select: text;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .staff-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+    }
+
+    .staff-list li {
+      background-color: #800000cc;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #800000cc;
+      font-weight: 600;
+      color: #ffdede;
+      user-select: text;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    /* Discord Support Server Logo */
+    .discord-support {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    .discord-support img {
+      height: 32px;
+      width: 32px;
+      border-radius: 6px;
+      filter: drop-shadow(0 0 3px #800000);
+    }
+
+    /* Footer */
+    footer {
+      background-color: rgba(51, 0, 0, 0.85);
+      padding: 1.2rem 1rem;
+      text-align: center;
+      border-top: 3px solid #800000;
+      color: #b36b6b;
+      font-weight: 300;
+      user-select: none;
+      font-size: 0.9rem;
+      box-shadow: inset 0 3px 5px #80000055;
+      z-index: 10;
+      position: relative;
+    }
+
+    footer a {
+      color: #ff4d4d;
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #ffdede;
+    }
+
+    /* Responsive */
+    @media (max-width: 650px) {
+      .staff-list {
+        justify-content: center;
+      }
+      nav button {
+        font-size: 1rem;
+      }
+      header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <img src="https://cdn.discordapp.com/icons/543220221318660104/9074a873f960179ac847e6e8f081d94f.png?size=480" alt="Void Falls Logo" class="logo" />
+      <h1>Void Falls</h1>
+    </div>
+    <nav role="tablist" aria-label="Primary navigation">
+      <button role="tab" aria-selected="true" aria-controls="tab-games" id="tab-games-btn" tabindex="0">Games</button>
+      <button role="tab" aria-selected="false" aria-controls="tab-group" id="tab-group-btn" tabindex="-1">Group</button>
+      <button role="tab" aria-selected="false" aria-controls="tab-discord" id="tab-discord-btn" tabindex="-1">Discord</button>
+      <button role="tab" aria-selected="false" aria-controls="tab-staff" id="tab-staff-btn" tabindex="-1">Staff</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="tab-games" class="tab-panel active" role="tabpanel" aria-labelledby="tab-games-btn" tabindex="0">
+      <div class="hero" role="banner" aria-label="Site introduction">
+        <h2>Welcome to Void Falls</h2>
+        <p>Your Roblox developers for the best Gun FFA experiences. Play the classic DaHood games with friends and compete to the top!</p>
+      </div>
+      <h3>Our Games</h3>
+      <div class="games-grid">
+
+        <div class="game-card" onclick="window.open('https://www.roblox.com/games/120182610838514/Da-Bot-Aim-Trainer-GUN-FFA','_blank')" role="button" tabindex="0" onkeypress="if(event.key==='Enter')this.click()">
+          <img src="https://tr.rbxcdn.com/180DAY-1c603c443d77f1947a304f26cbb8132b/150/150/Image/Webp/noFilter" alt="Da Bot Aim Trainer thumbnail" loading="lazy" />
+          <div class="game-card-content">
+            <h3>Da Bot Aim Trainer - GUN FFA</h3>
+            <a class="play-btn" href="https://www.roblox.com/games/120182610838514/Da-Bot-Aim-Trainer-GUN-FFA" target="_blank" rel="noopener">Play</a>
+          </div>
+        </div>
+
+        <div class="game-card" onclick="window.open('https://www.roblox.com/games/77369032494150/Da-Downhill-GUN-FFA','_blank')" role="button" tabindex="0" onkeypress="if(event.key==='Enter')this.click()">
+          <img src="https://tr.rbxcdn.com/180DAY-b4dfd073162beda547489840b99158c6/150/150/Image/Webp/noFilter" alt="Da Downhill thumbnail" loading="lazy" />
+          <div class="game-card-content">
+            <h3>Da Downhill - GUN FFA</h3>
+            <a class="play-btn" href="https://www.roblox.com/games/77369032494150/Da-Downhill-GUN-FFA" target="_blank" rel="noopener">Play</a>
+          </div>
+        </div>
+
+        <div class="game-card" onclick="window.open('https://www.roblox.com/games/84366677940861/Da-Uphill-GUN-FFA','_blank')" role="button" tabindex="0" onkeypress="if(event.key==='Enter')this.click()">
+          <img src="https://tr.rbxcdn.com/180DAY-8623172db256197be2bf34f06dbc14dc/150/150/Image/Webp/noFilter" alt="Da Uphill thumbnail" loading="lazy" />
+          <div class="game-card-content">
+            <h3>Da Uphill - GUN FFA</h3>
+            <a class="play-btn" href="https://www.roblox.com/games/84366677940861/Da-Uphill-GUN-FFA" target="_blank" rel="noopener">Play</a>
+          </div>
+        </div>
+
+        <div class="game-card" onclick="window.open('https://www.roblox.com/games/132023669786646/Da-Bank-GUN-FFA','_blank')" role="button" tabindex="0" onkeypress="if(event.key==='Enter')this.click()">
+          <img src="https://tr.rbxcdn.com/180DAY-59739d3d41538caaa2530b51aaa64a5f/150/150/Image/Webp/noFilter" alt="Da Bank thumbnail" loading="lazy" />
+          <div class="game-card-content">
+            <h3>Da Bank - GUN FFA</h3>
+            <a class="play-btn" href="https://www.roblox.com/games/132023669786646/Da-Bank-GUN-FFA" target="_blank" rel="noopener">Play</a>
+          </div>
+        </div>
+
+        <div class="game-card" onclick="window.open('https://www.roblox.com/games/15186202290/GUN-FFA-Da-Strike-MOBILE-MACRO','_blank')" role="button" tabindex="0" onkeypress="if(event.key==='Enter')this.click()">
+          <img src="https://tr.rbxcdn.com/180DAY-3636f117ef9173691e58d1b9b5c10f76/256/256/Image/Webp/noFilter" alt="Da Strike thumbnail" loading="lazy" />
+          <div class="game-card-content">
+            <h3>GUN FFA Da Strike MOBILE MACRO</h3>
+            <a class="play-btn" href="https://www.roblox.com/games/15186202290/GUN-FFA-Da-Strike-MOBILE-MACRO" target="_blank" rel="noopener">Play</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="tab-group" class="tab-panel" role="tabpanel" aria-labelledby="tab-group-btn" tabindex="0">
+      <h3>Roblox Group</h3>
+      <p>
+        Join the official Void Falls Roblox group for updates, events, and community:
+      </p>
+      <p><a href="https://www.roblox.com/communities/35112943/V-id-Falls#!/about" target="_blank" rel="noopener">https://www.roblox.com/communities/35112943/V-id-Falls</a></p>
+    </section>
+
+    <section id="tab-discord" class="tab-panel" role="tabpanel" aria-labelledby="tab-discord-btn" tabindex="0">
+      <h3>Discord Servers</h3>
+      <p>
+        Join the Main Discord:<br />
+        <span class="discord-support">
+          <img src="https://cdn.discordapp.com/icons/543220221318660104/9074a873f960179ac847e6e8f081d94f.png?size=480" alt="Support Discord Logo" />
+          <a href="https://discord.gg/voidfalls" target="_blank" rel="noopener">discord.gg/voidfalls</a>
+        </span>
+      </p>
+      <p>
+        Join the Support Discord:<br />
+        <span class="discord-support">
+          <img src="https://cdn.discordapp.com/icons/1094017790375108709/a320befffa82d65e38b6e80d3335753f.png?size=480" alt="Support Discord Logo" />
+          <a href="https://discord.gg/PTm4Fxdx9H" target="_blank" rel="noopener">discord.gg/PTm4Fxdx9H</a>
+        </span>
+      </p>
+    </section>
+
+    <section id="tab-staff" class="tab-panel staff-section" role="tabpanel" aria-labelledby="tab-staff-btn" tabindex="0">
+      <h3>Staff Members</h3>
+
+      <div class="staff-group">
+        <h4>Manager</h4>
+        <ul class="staff-list">
+          <li>hhahahaahahahhahaaha</li>
+      </div>
+
+      <div class="staff-group">
+        <h4>Head Admins</h4>
+        <ul class="staff-list">
+          <li>hhahahahhahhahahaaha</li>
+          <li>sillyrichcatboy</li>
+          <li>Faintedmisery</li>
+          <li>romhantic</li>
+        </ul>
+      </div>
+
+      <div class="staff-group">
+        <h4>Admins</h4>
+        <ul class="staff-list">
+          <li>vzxzzxvwwzxvwzvxwwzx</li>
+          <li>4q28677824281428</li>
+          <li>jxpm00t</li>
+          <li>ipursueherthoughts</li>
+          <li>dttmunlesskoko</li>
+          <li>4mkgz</li>
+          <li>okaylolwtv</li>
+          <li>Personator</li>
+          <li>complicatlng</li>
+          <li>z3nEuu</li>
+          <li>blessorr</li>
+        </ul>
+      </div>
+
+      <div class="staff-group">
+        <h4>Moderators</h4>
+        <ul class="staff-list">
+          <li>hauntyouasaghoul</li>
+          <li>0xy9fa38f7cd21e69450</li>
+          <li>eviIlrise</li>
+          <li>reminisceaboutyou</li>
+          <li>wr69</li>
+          <li>516ca141a5bd47b79943</li>
+          <li>lIIlIIIIIIIIIIlIIlII</li>
+          <li>vampruin</li>
+          <li>AmandaaBynes</li>
+          <li>vscici</li>
+          <li>hahahaaahahhahahahha</li>
+          <li>potencyofsorrow</li>
+          <li>xjkapaldtyjehagxfxg</li>
+          <li>Ilovetigger123</li>
+          <li>loadyourm16</li>
+          <li>sdpcmvdko</li>
+          <li>qwhllll</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2019 Void Falls | <a href="https://discord.gg/PTm4Fxdx9H">Contact Us</a> | Join our <a href="https://discord.gg/voidfalls" target="_blank" rel="noopener">Discord</a>
+  </footer>
+
+  <script>
+    const tabs = document.querySelectorAll('nav button[role="tab"]');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        // Deselect all tabs and hide all panels
+        tabs.forEach(t => {
+          t.setAttribute('aria-selected', 'false');
+          t.setAttribute('tabindex', '-1');
+        });
+        tabPanels.forEach(panel => panel.classList.remove('active'));
+
+        // Select clicked tab and show panel
+        tab.setAttribute('aria-selected', 'true');
+        tab.setAttribute('tabindex', '0');
+        const panel = document.getElementById(tab.getAttribute('aria-controls'));
+        panel.classList.add('active');
+        panel.focus();
+      });
+    });
+  </script>
+</body>
+</html>
