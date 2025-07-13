@@ -260,6 +260,25 @@
       font-family: 'Roboto Mono', monospace;
       color: #fff;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      position: relative;
+    }
+
+    .copy-button {
+      background-color: #fff;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .copy-button:hover {
+      background-color: #ccc;
     }
 
     footer {
@@ -359,6 +378,7 @@
         <h4>Script Code:</h4>
         <div class="code-box">
           loadstring(game:HttpGet("https://raw.githubusercontent.com/Zeerunsyou/skiddo/refs/heads/main/skiddo.lua"))()
+          <button class="copy-button" onclick="copyToClipboard()">Copy</button>
         </div>
         <ul class="staff-list">
           <!-- Add staff members here -->
@@ -368,7 +388,7 @@
   </main>
 
   <footer>
-    &copy; 2019 Trojan | <a href="https://discord.gg/PTm4Fxdx9H">Contact Us</a> | Join our <a href="https://discord.gg/voidfalls" target="_blank" rel="noopener">Discord</a>
+    &copy; 2019 Trojan
   </footer>
 
   <script>
@@ -392,6 +412,15 @@
         panel.focus();
       });
     });
+
+    function copyToClipboard() {
+      const code = `loadstring(game:HttpGet("https://raw.githubusercontent.com/Zeerunsyou/skiddo/refs/heads/main/skiddo.lua"))()`;
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Script code copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
   </script>
 </body>
 </html>
